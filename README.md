@@ -11,6 +11,7 @@
 
 # Integration
 
+## EcsWorld observer
 Integration can be processed with one call of `LeopotamGroup.Ecs.UnityIntegration.EcsWorldObserver.Create()` metod - this call should be wrapped to `#if UNITY_EDITOR` preprocessor define:
 ```
 public class Startup : MonoBehaviour {
@@ -19,10 +20,9 @@ public class Startup : MonoBehaviour {
     void Start () {
         var world = new EcsWorld ();
         
-        #if UNITY_EDITOR
-            UnityIntegration.EcsWorldObserver.Create (world);
-        #endif
-        
+#if UNITY_EDITOR
+        UnityIntegration.EcsWorldObserver.Create (world);
+#endif  
         _systems = new EcsSystems(world)
             .Add (new RunSystem1());
             // Additional initialization here...
@@ -30,6 +30,32 @@ public class Startup : MonoBehaviour {
     }
 }
 ```
+
+Observer **must** be created before any entity will be created in ecs-world.
+
+## EcsSystems observer
+Integration can be processed with one call of `LeopotamGroup.Ecs.UnityIntegration.EcsSystemsObserver.Create()` metod - this call should be wrapped to `#if UNITY_EDITOR` preprocessor define:
+```
+public class Startup : MonoBehaviour {
+    EcsSystems _systems;
+
+    void Start () {
+        var world = new EcsWorld ();
+        
+#if UNITY_EDITOR
+        UnityIntegration.EcsWorldObserver.Create (world);
+#endif        
+        _systems = new EcsSystems(world)
+            .Add (new RunSystem1());
+            // Additional initialization here...
+        _systems.Initialize ();
+#if UNITY_EDITOR
+        UnityIntegration.EcsSystemsObserver.Create (_systems);
+#endif
+    }
+}
+```
+
 
 # Limitations
 
