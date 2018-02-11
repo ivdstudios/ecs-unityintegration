@@ -37,7 +37,7 @@ public class Startup : MonoBehaviour {
 By design, observer works as readonly copy of ecs world data.
 
 ## I know that data in component updated, but I can't see it in runtime.
-By design, inspector will updated only on any unity editor interaction. For example, you can click inside inspector and component's data will be updated.
+By design, inspector will be updated only on any unity editor interaction. For example, you can click inside inspector and component's data will be updated.
 
 # License
 The software released under the terms of the MIT license. Enjoy.
