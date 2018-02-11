@@ -13,7 +13,7 @@ using UnityEngine;
 namespace LeopotamGroup.Ecs.UnityIntegration {
     [CustomEditor (typeof (EcsEntityObserver))]
     class EcsEntityObserverInspector : Editor {
-        static List<object> _componentsCache = new List<object> (6);
+        static List<object> _componentsCache = new List<object> (16);
 
         EcsEntityObserver _entity;
 
@@ -47,7 +47,6 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
                 }
                 EditorGUI.indentLevel = indent;
                 GUILayout.EndVertical ();
-                // EditorGUILayout.Separator ();
                 EditorGUILayout.Space ();
             }
         }
@@ -65,7 +64,8 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
                 GUILayout.EndHorizontal ();
                 return;
             }
-            EditorGUILayout.LabelField (field.Name, fieldValue != null ? fieldValue.ToString () : "null");
+            var strVal = fieldValue != null ? string.Format (System.Globalization.CultureInfo.InvariantCulture, "{0}", fieldValue) : "null";
+            EditorGUILayout.LabelField (field.Name, strVal);
         }
     }
 
