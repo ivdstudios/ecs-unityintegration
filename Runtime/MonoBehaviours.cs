@@ -5,6 +5,7 @@
 // Copyright (c) 2018 Leopotam <leopotam@gmail.com>
 // ----------------------------------------------------------------------------
 
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -100,3 +101,4 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
         }
     }
 }
+#endif
