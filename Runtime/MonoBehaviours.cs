@@ -17,7 +17,7 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
         public int Id;
     }
 
-    public sealed class EcsSystemsObserver : MonoBehaviour, IEcsSystemsListener {
+    public sealed class EcsSystemsObserver : MonoBehaviour, IEcsSystemsDebugListener {
         EcsSystems _systems;
 
         public static GameObject Create (EcsSystems systems, string name = null) {
@@ -29,7 +29,7 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
             go.hideFlags = HideFlags.NotEditable;
             var observer = go.AddComponent<EcsSystemsObserver> ();
             observer._systems = systems;
-            systems.AddEventListener (observer);
+            systems.AddDebugListener (observer);
             return go;
         }
 
@@ -39,20 +39,22 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
 
         void OnDestroy () {
             if (_systems != null) {
-                _systems.RemoveEventListener (this);
+                _systems.RemoveDebugListener (this);
                 _systems = null;
             }
         }
 
-        void IEcsSystemsListener.OnSystemsDestroyed () {
+        void IEcsSystemsDebugListener.OnSystemsDestroyed () {
             OnDestroy ();
         }
     }
 
-    public sealed class EcsWorldObserver : MonoBehaviour, IEcsWorldListener {
+    public sealed class EcsWorldObserver : MonoBehaviour, IEcsWorldDebugListener {
         EcsWorld _world;
 
         readonly Dictionary<int, GameObject> _entities = new Dictionary<int, GameObject> (1024);
+
+        static readonly List<object> _componentsCache = new List<object> (6);
 
         public static GameObject Create (EcsWorld world, string name = null) {
             if (world == null) {
@@ -63,7 +65,7 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
             go.hideFlags = HideFlags.NotEditable;
             var observer = go.AddComponent<EcsWorldObserver> ();
             observer._world = world;
-            world.AddEventListener (observer);
+            world.AddDebugListener (observer);
             return go;
         }
 
@@ -71,31 +73,53 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
             return _world.GetStats ();
         }
 
-        void IEcsWorldListener.OnEntityCreated (int entity) {
+        void IEcsWorldDebugListener.OnEntityCreated (int entity) {
             GameObject go;
             if (!_entities.TryGetValue (entity, out go)) {
-                go = new GameObject (entity.ToString ("D8"));
+                go = new GameObject ();
                 go.transform.SetParent (transform, false);
                 go.hideFlags = HideFlags.NotEditable;
                 var unityEntity = go.AddComponent<EcsEntityObserver> ();
                 unityEntity.World = _world;
                 unityEntity.Id = entity;
                 _entities[entity] = go;
+                UpdateEntityName (entity);
             }
             go.SetActive (true);
         }
 
-        void IEcsWorldListener.OnEntityRemoved (int entity) {
+        void IEcsWorldDebugListener.OnEntityRemoved (int entity) {
             GameObject go;
             if (!_entities.TryGetValue (entity, out go)) {
                 throw new Exception ("Unity visualization not exists, looks like a bug");
             }
+            UpdateEntityName (entity);
             go.SetActive (false);
+        }
+
+        void IEcsWorldDebugListener.OnComponentAdded (int entity, object component) {
+            UpdateEntityName (entity);
+        }
+
+        void IEcsWorldDebugListener.OnComponentRemoved (int entity, object component) {
+            UpdateEntityName (entity);
+        }
+
+        void UpdateEntityName (int entity) {
+            _world.GetComponents (entity, _componentsCache);
+            var entityName = entity.ToString ("D8");
+            if (_componentsCache.Count > 0) {
+                foreach (var component in _componentsCache) {
+                    entityName = string.Format ("{0}:{1}", entityName, component.GetType ().Name);
+                }
+                _componentsCache.Clear ();
+            }
+            _entities[entity].name = entityName;
         }
 
         void OnDestroy () {
             if (_world != null) {
-                _world.RemoveEventListener (this);
+                _world.RemoveDebugListener (this);
                 _world = null;
             }
         }

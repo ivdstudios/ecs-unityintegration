@@ -23,7 +23,7 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
             var systems = observer.GetSystems ();
             var guiEnabled = GUI.enabled;
             GUI.enabled = true;
-            systems.IsActive = EditorGUILayout.Toggle ("Run systems activated", systems.IsActive);
+            systems.IsRunActive = EditorGUILayout.Toggle ("Run systems activated", systems.IsRunActive);
 
             systems.GetPreInitSystems (_preInitList);
             if (_preInitList.Count > 0) {
@@ -51,7 +51,7 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
                 _initList.Clear ();
             }
 
-            if (!systems.IsActive) {
+            if (!systems.IsRunActive) {
                 GUI.enabled = false;
             }
             DrawRunSystems ("Update systems", systems, EcsRunSystemType.Update);
