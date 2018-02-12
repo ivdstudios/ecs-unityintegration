@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LeopotamGroup.Ecs.UnityIntegration {
-    sealed class EcsEntityObserver : MonoBehaviour {
+    public sealed class EcsEntityObserver : MonoBehaviour {
         public EcsWorld World;
 
         public int Id;
