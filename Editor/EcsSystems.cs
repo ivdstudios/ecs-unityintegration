@@ -5,7 +5,6 @@
 // Copyright (c) 2018 Leopotam <leopotam@gmail.com>
 // ----------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -74,38 +73,6 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
                 GUILayout.EndVertical ();
                 _runList.Clear ();
             }
-        }
-    }
-
-    public sealed class EcsSystemsObserver : MonoBehaviour, IEcsSystemsListener {
-        EcsSystems _systems;
-
-        public static GameObject Create (EcsSystems systems, string name = null) {
-            if (systems == null) {
-                throw new ArgumentNullException ("systems");
-            }
-            var go = new GameObject (name != null ? string.Format ("[ECS-SYSTEMS {0}]", name) : "[ECS-SYSTEMS]");
-            DontDestroyOnLoad (go);
-            go.hideFlags = HideFlags.NotEditable;
-            var observer = go.AddComponent<EcsSystemsObserver> ();
-            observer._systems = systems;
-            systems.AddEventListener (observer);
-            return go;
-        }
-
-        public EcsSystems GetSystems () {
-            return _systems;
-        }
-
-        void OnDestroy () {
-            if (_systems != null) {
-                _systems.RemoveEventListener (this);
-                _systems = null;
-            }
-        }
-
-        void IEcsSystemsListener.OnSystemsDestroyed () {
-            OnDestroy ();
         }
     }
 }

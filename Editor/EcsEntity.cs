@@ -68,10 +68,4 @@ namespace LeopotamGroup.Ecs.UnityIntegration {
             EditorGUILayout.LabelField (field.Name, strVal);
         }
     }
-
-    sealed class EcsEntityObserver : MonoBehaviour {
-        public EcsWorld World;
-
-        public int Id;
-    }
 }
